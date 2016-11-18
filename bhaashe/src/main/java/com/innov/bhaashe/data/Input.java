@@ -25,7 +25,7 @@ public class Input {
     private void guessVerb() {
         String[] words = text.split(" ");
         for(String word : words){
-            if(word.endsWith("ed") || word.endsWith("ing"))
+            if(word.endsWith("ed") || word.endsWith("ing")){}
         }
     }
 
