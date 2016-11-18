@@ -1,8 +1,5 @@
 package com.innov.bhaashe;
 
-/**
- * Created by Sagar on 11/11/2016.
- */
 public class WordSorter {
 
     private static final String[] peopleWords =

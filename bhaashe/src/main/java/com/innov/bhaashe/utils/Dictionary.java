@@ -3,9 +3,6 @@ package com.innov.bhaashe.utils;
 import java.io.IOException;
 import java.util.Properties;
 
-/**
- * Created by 310229986 on 11/15/2016.
- */
 public class Dictionary {
 
     public static final String DICTIONARY_FILE = "dictionary.properties";

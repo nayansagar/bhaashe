@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by 310229986 on 11/15/2016.
- */
 public class PhraseTranslator {
 
     Map<String, String> phraseMappings;

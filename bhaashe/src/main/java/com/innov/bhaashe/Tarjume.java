@@ -1,17 +1,11 @@
 package com.innov.bhaashe;
 
 import com.innov.bhaashe.data.Input;
-import com.innov.bhaashe.utils.*;
 import com.innov.bhaashe.utils.Dictionary;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
 
-/**
- * Created by Sagar on 11/10/2016.
- */
 public class Tarjume {
 
     private Dictionary dictionary;

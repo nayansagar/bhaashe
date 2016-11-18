@@ -2,9 +2,6 @@ package com.innov.bhaashe.data;
 
 import java.util.List;
 
-/**
- * Created by 310229986 on 11/15/2016.
- */
 public class Candidate {
 
     private String originalClosestPhrase;

@@ -8,9 +8,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-/**
- * Created by 310229986 on 11/15/2016.
- */
 public class FileUtils {
 
     private Map<String, FileWriter> fileWriters = new HashMap<String, FileWriter>();
