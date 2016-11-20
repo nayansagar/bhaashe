@@ -1,19 +1,19 @@
 package com.innov.bhaashe.utils;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 public class Dictionary {
 
     public static final String DICTIONARY_FILE = "dictionary.properties";
-    private static Properties properties;
+    private static Map<String, String> properties;
     private static Dictionary instance = new Dictionary();
     private FileUtils fileUtils;
 
     private Dictionary() {
         try {
-            properties = new Properties();
-            loadDictionary();
+            properties = FileUtils.getInstance().getMappingFromFile(DICTIONARY_FILE, "=");
             fileUtils = FileUtils.getInstance();
         } catch (IOException e) {
             e.printStackTrace();
@@ -29,19 +29,15 @@ public class Dictionary {
         return instance;
     }
 
-    private void loadDictionary() throws IOException {
-        properties.load(this.getClass().getClassLoader().getResourceAsStream(DICTIONARY_FILE));
-    }
-
     public String get(String key){
-        return properties.getProperty(key.toLowerCase());
+        return properties.get(key.toLowerCase());
     }
 
     public void addToDictionary(String word) {
         try {
             fileUtils.writeLineToFile(DICTIONARY_FILE, word.toLowerCase());
             synchronized (properties){
-                loadDictionary();
+                properties = FileUtils.getInstance().getMappingFromFile(DICTIONARY_FILE, "=");
             }
         } catch (IOException e) {
             e.printStackTrace();

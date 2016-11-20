@@ -24,8 +24,28 @@ public class Input {
 
     private void guessVerb() {
         String[] words = text.split(" ");
-        for(String word : words){
-            if(word.endsWith("ed") || word.endsWith("ing")){}
+        for(int i=0; i<words.length; i++){
+            String word = words[i];
+            if(word.endsWith("ing")){
+                if(text.contains("are you "+word) || text.contains("are we "+word) || text.contains("am i "+word)
+                        || text.contains("are they "+word) || text.contains("is it "+word) || text.contains("is "+word)
+                        || text.contains("was "+word) || text.contains("were "+word) || text.contains("you are "+word)
+                        || text.contains("we are "+word) || text.contains("i am "+word) || text.contains("i was "+word)
+                        || text.contains("they are "+word) || text.contains("it is "+word)){
+                    verb = word.substring(0, word.indexOf("ing"));
+                    return;
+                }
+            }
+
+            if(word.endsWith("ed")){
+                if(text.contains("would have "+word) || text.contains("should have "+word) || text.contains("might have "+word)
+                        || text.contains("must have "+word) || text.contains("could have "+word) || text.contains("has "+word)
+                        || text.contains("i "+word) || text.contains("he "+word) || text.contains("she "+word)
+                        || text.contains("they "+word) || text.contains("it "+word)){
+                    verb = word.substring(0, word.indexOf("ed"));
+                    return;
+                }
+            }
         }
     }
 
@@ -83,4 +103,7 @@ public class Input {
         return question;
     }
 
+    public String getVerb() {
+        return verb;
+    }
 }

@@ -1,5 +1,8 @@
 package com.innov.bhaashe;
 
+import com.innov.bhaashe.data.Input;
+import org.apache.commons.lang3.StringUtils;
+
 public class WordSorter {
 
     private static final String[] peopleWords =
@@ -12,12 +15,22 @@ public class WordSorter {
 
     private static final String[] questionWords = {"why", "what", "when", "how", "who", "where"};
 
-    public String sort(String sentence, boolean isQuestion){
-        sentence = sentence.toLowerCase();
+    public String sort(Input input, boolean isQuestion){
+        String sentence = input.getText().toLowerCase();
         sentence = sortPeopleWords(sentence);
         if(isQuestion || startsWithQuestionWord(sentence)){
             sentence = sortQuestionWords(sentence);
         }
+        sentence = sortVerb(sentence, input);
+        return sentence;
+    }
+
+    private String sortVerb(String sentence, Input input) {
+        if(StringUtils.isEmpty(input.getVerb())){
+            return sentence;
+        }
+        sentence = sentence.replace(input.getVerb(), "");
+        sentence = sentence + " " + input.getVerb();
         return sentence;
     }
 
