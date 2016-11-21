@@ -28,8 +28,9 @@ public class Input {
             String word = words[i];
             if(word.endsWith("ing")){
                 if(text.contains("are you "+word) || text.contains("are we "+word) || text.contains("am i "+word)
-                        || text.contains("are they "+word) || text.contains("is it "+word) || text.contains("is "+word)
-                        || text.contains("was "+word) || text.contains("were "+word) || text.contains("you are "+word)
+                        || text.contains("are they "+word) || text.contains("is it "+word) ||text.contains("did it "+word)
+                        || text.contains("does it "+word) || text.contains("is "+word) || text.contains("been "+word)  || text.contains("was "+word)
+                        || text.contains("were "+word) || text.contains("you are "+word)
                         || text.contains("we are "+word) || text.contains("i am "+word) || text.contains("i was "+word)
                         || text.contains("they are "+word) || text.contains("it is "+word)){
                     verb = word.substring(0, word.indexOf("ing"));
