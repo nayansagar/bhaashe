@@ -20,6 +20,8 @@ public class SentenceAnalyzer {
         private String directObject = "";
         private String indirectObject = "";
         private String verb;
+        private String tense;
+        private String person;
         private boolean isQuestion;
 
         private int subjectIndex = -1;
@@ -36,6 +38,43 @@ public class SentenceAnalyzer {
             detectSubject();
             detectVerb();
             detectObjects();
+            detectTense();
+            detectPerson();
+        }
+
+        private void detectPerson(){
+            if(subject.equals("i") || subject.equals("we")){
+                person = "first";
+            }
+
+            if(subject.equals("you")){
+                person = "second";
+            }
+
+            if(subject.equals("he") || subject.equals("she") || subject.equals("they")){
+                person = "third";
+            }
+        }
+
+        private void detectTense() {
+            String tenseWord = "";
+            if(isQuestion){
+                tenseWord = splits[subjectIndex - 1];
+            }else {
+                tenseWord = splits[subjectIndex + 1];
+            }
+
+            if(tenseWord.equals("is") || tenseWord.equals("are") || tenseWord.equals("am") || tenseWord.equals(" have been") || tenseWord.equals("has been")){
+                tense = "present";
+            }
+
+            if(tenseWord.equals("was") || tenseWord.equals("were")){
+                tense = "past";
+            }
+
+            if(tenseWord.equals("will") || tenseWord.equals("would") || tenseWord.equals("shall")){
+                tense = "future";
+            }
         }
 
         private void detectObjects() {
@@ -204,20 +243,34 @@ public class SentenceAnalyzer {
         public void setIsQuestion(boolean isQuestion) {
             this.isQuestion = isQuestion;
         }
+
+        public String getTense() {
+            return tense;
+        }
+
+        public String getPerson() {
+            return person;
+        }
     }
+
+    private static final String[] sentences = {"What were you doing"};
 
     public static void main(String[] args) throws FileNotFoundException {
         SentenceAnalyzer sentenceAnalyzer = new SentenceAnalyzer();
 
         List<String> inputs = FileUtils.getInstance().readLinesFromFile("input.txt");
+        //List<String> inputs = Arrays.asList(sentences);
         for(String sentence : inputs){
             AnalysisContext analysisContext = new AnalysisContext(sentence);
             analysisContext.analyze();
-            System.out.println("----------------------"+sentence+"----------------------");
+            System.out.println("----------------------" + sentence + "----------------------");
+            System.out.println("IS_QUESTION : "+analysisContext.isQuestion());
             System.out.println("SUBJECT : "+analysisContext.getSubject());
             System.out.println("VERB : "+analysisContext.getVerb());
             System.out.println("DIRECT OBJECT : "+analysisContext.getDirectObject());
             System.out.println("INDIRECT OBJECT : "+analysisContext.getIndirectObject());
+            System.out.println("TENSE : "+analysisContext.getTense());
+            System.out.println("PERSON : "+analysisContext.getPerson());
         }
     }
 
