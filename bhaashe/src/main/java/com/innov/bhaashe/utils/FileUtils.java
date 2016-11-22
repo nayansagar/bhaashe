@@ -1,5 +1,7 @@
 package com.innov.bhaashe.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -39,7 +41,11 @@ public class FileUtils {
         for(String line : fileLines){
             if(line.contains(separator)){
                 String[] splits = line.split(separator);
-                mappings.put(splits[0], splits[1]);
+                if(splits.length == 1){
+                    mappings.put(splits[0], "");
+                }else{
+                    mappings.put(splits[0], splits[1]);
+                }
             }
         }
         return mappings;

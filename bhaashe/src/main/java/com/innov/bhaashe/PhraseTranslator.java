@@ -5,7 +5,6 @@ import com.innov.bhaashe.data.Input;
 import com.innov.bhaashe.utils.Dictionary;
 import com.innov.bhaashe.utils.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -136,9 +135,9 @@ public class PhraseTranslator {
         for(String text : inputs){
             Candidate candidate = phraseTranslator.process(new Input(text));
             if(candidate == null){
+                FileUtils.getInstance().writeLineToFile("phrases.txt", text);
                 Tarjume tarjume = new Tarjume();
-                String translation = tarjume.process(new Input(text));
-                System.out.println("From Tarjume :: "+translation);
+                tarjume.process(new Input(text));
             }else{
                 System.out.println("From PhraseTranslator :: "+ candidate.getTranslation());
             }

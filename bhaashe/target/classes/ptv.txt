@@ -1,0 +1,15 @@
+first_past=ide
+first_pastparticiple=uttidde
+first_present=uttiddene
+first_future=uttene
+first_futurecontinuous=uttiruttene
+second_past=idiri
+second_pastparticiple=uttiddiri
+second_present=uttiddeeri
+second_future=utteeri
+second_futurecontinuous=uttirutteeri
+third_past=idaru
+third_pastparticiple=uttiddaru
+third_present=uttiddaare
+third_future=uttaare
+third_futurecontinuous=uttiruttaare
