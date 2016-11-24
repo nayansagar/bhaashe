@@ -22,10 +22,13 @@ public class SentenceAnalyzer {
         private String verb;
         private String tense;
         private String person;
+        private String remainingPhrase = "";
         private boolean isQuestion;
 
         private int subjectIndex = -1;
         private int verbIndex = -1;
+        private int directObjectIndex = -1;
+        private int indirectObjectIndex = -1;
         private String[] splits;
 
         public AnalysisContext(String sentence) {
@@ -40,6 +43,18 @@ public class SentenceAnalyzer {
             detectObjects();
             detectTense();
             detectPerson();
+            detectRemainingPhrase();
+        }
+
+        private void detectRemainingPhrase() {
+            int lastIndex = verbIndex;
+            if(directObjectIndex > lastIndex) lastIndex = directObjectIndex;
+            if(indirectObjectIndex > lastIndex) lastIndex = indirectObjectIndex;
+
+            for(int i=lastIndex + 1; i<splits.length; i++){
+                remainingPhrase += splits[i]+" ";
+            }
+
         }
 
         private void detectPerson(){
@@ -84,8 +99,10 @@ public class SentenceAnalyzer {
 
             for(String word : WordCollections.indirectObjects){
                 if(word.equals(splits[verbIndex+1])){
-                    indirectObject = splits[verbIndex+1];
+                    indirectObjectIndex = verbIndex+1;
+                    indirectObject = splits[verbIndex+1]+" ";
                     for(int i= verbIndex+2; i<splits.length; i++){
+                        directObjectIndex = i;
                         directObject += splits[i]+" ";
                     }
                     return;
@@ -95,10 +112,12 @@ public class SentenceAnalyzer {
             for(int i=verbIndex+1; i<splits.length; i++){
                 if("to".equals(splits[i]) || "for".equals(splits[i]) || "with".equals(splits[i])){
                     for(int j = verbIndex+1; j<i; j++){
+                        directObjectIndex = j;
                         directObject += splits[j]+" ";
                     }
 
                     for(int j=i; j<splits.length; j++){
+                        indirectObjectIndex = j;
                         indirectObject += splits[j]+" ";
                     }
                 }
@@ -133,9 +152,19 @@ public class SentenceAnalyzer {
                     || "must have".equals(phrase) || "can not".equals(phrase) || "could not".equals(phrase)
                     || "would not".equals(phrase) || "should not".equals(phrase) || "has not".equals(phrase)
                     || "had not".equals(phrase) || "have not".equals(phrase)){
-                        verb = splits[subjectIndex + 3];
-                        verbIndex = subjectIndex+3;
-                        return;
+                        if(splits[subjectIndex + 3].endsWith("ly") && subjectIndex + 4 < splits.length){
+                            verb = splits[subjectIndex + 3] + " " + splits[subjectIndex + 4];
+                            verbIndex = subjectIndex+4;
+                            return;
+                        }else if(subjectIndex + 4 < splits.length && splits[subjectIndex + 4].endsWith("ly")){
+                            verb = splits[subjectIndex + 4] + " " + splits[subjectIndex + 3];
+                            verbIndex = subjectIndex+4;
+                            return;
+                        }else{
+                            verb = splits[subjectIndex + 3];
+                            verbIndex = subjectIndex+3;
+                            return;
+                        }
                     }
                 }
                 if(splits.length > subjectIndex+2){
@@ -145,13 +174,34 @@ public class SentenceAnalyzer {
                             || "will".equals(next) || "would".equals(next) || "should".equals(next) || "could".equals(next)
                             || "won't".equals(next) || "wouldn't".equals(next) || "shouldn't".equals(next)
                             || "couldn't".equals(next) || "can't".equals(next)){
-                        verb = splits[subjectIndex + 2];
-                        verbIndex = subjectIndex+2;
-                        return;
+                        if(splits[subjectIndex + 1].endsWith("ly") && subjectIndex + 2 < splits.length){
+                            verb = splits[subjectIndex + 1] + " " + splits[subjectIndex + 2];
+                            verbIndex = subjectIndex+2;
+                            return;
+                        }else if(subjectIndex + 2 < splits.length && splits[subjectIndex + 2].endsWith("ly")){
+                            verb = splits[subjectIndex + 2] + " " + splits[subjectIndex + 1];
+                            verbIndex = subjectIndex+2;
+                            return;
+                        }else{
+                            verb = splits[subjectIndex + 2];
+                            verbIndex = subjectIndex+2;
+                            return;
+                        }
                     }
                 }
-                verbIndex = subjectIndex+1;
-                verb = splits[subjectIndex + 1];
+                if(splits[subjectIndex + 1].endsWith("ly") && subjectIndex + 2 < splits.length){
+                    verb = splits[subjectIndex + 1] + " " + splits[subjectIndex + 2];
+                    verbIndex = subjectIndex+2;
+                    return;
+                }else if(subjectIndex + 2 < splits.length && splits[subjectIndex + 2].endsWith("ly")){
+                    verb = splits[subjectIndex + 2] + " " + splits[subjectIndex + 1];
+                    verbIndex = subjectIndex+2;
+                    return;
+                }else{
+                    verb = splits[subjectIndex + 1];
+                    verbIndex = subjectIndex+1;
+                    return;
+                }
             }
         }
 
@@ -251,12 +301,15 @@ public class SentenceAnalyzer {
         public String getPerson() {
             return person;
         }
+
+        public String getRemainingPhrase() {
+            return remainingPhrase;
+        }
     }
 
-    private static final String[] sentences = {"What were you doing"};
+    private static final String[] sentences = {"what will you do"};
 
     public static void main(String[] args) throws FileNotFoundException {
-        SentenceAnalyzer sentenceAnalyzer = new SentenceAnalyzer();
 
         List<String> inputs = FileUtils.getInstance().readLinesFromFile("input.txt");
         //List<String> inputs = Arrays.asList(sentences);
@@ -269,6 +322,7 @@ public class SentenceAnalyzer {
             System.out.println("VERB : "+analysisContext.getVerb());
             System.out.println("DIRECT OBJECT : "+analysisContext.getDirectObject());
             System.out.println("INDIRECT OBJECT : "+analysisContext.getIndirectObject());
+            System.out.println("REMAINING PHRASE : "+analysisContext.getRemainingPhrase());
             System.out.println("TENSE : "+analysisContext.getTense());
             System.out.println("PERSON : "+analysisContext.getPerson());
         }
