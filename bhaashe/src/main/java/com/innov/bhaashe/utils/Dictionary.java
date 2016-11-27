@@ -2,7 +2,6 @@ package com.innov.bhaashe.utils;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 
 public class Dictionary {
 
