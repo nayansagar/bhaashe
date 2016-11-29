@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class Clause {
 
     private String text;
-    private String subject;
+    private String subject = "";
     private String directObject = "";
     private String indirectObject = "";
     private String verb;
@@ -168,7 +168,7 @@ public class Clause {
                         || "was".equals(next) || "were".equals(next)
                         || "will".equals(next) || "would".equals(next) || "should".equals(next) || "could".equals(next)
                         || "won't".equals(next) || "wouldn't".equals(next) || "shouldn't".equals(next)
-                        || "couldn't".equals(next) || "can't".equals(next)){
+                        || "couldn't".equals(next) || "can't".equals(next) || "never".equals(next)){
                     if(splits[subjectIndex + 1].endsWith("ly") && subjectIndex + 2 < splits.length){
                         verb = splits[subjectIndex + 1] + " " + splits[subjectIndex + 2];
                         verbIndex = subjectIndex+2;
@@ -213,9 +213,27 @@ public class Clause {
                 if(Arrays.asList(WordCollections.tenseWords).contains(splits[i])){
                     if( (splits.length > i + 2) && ( "a".equals(splits[i+1]) || "an".equals(splits[i+1])) ||
                             "the".equals(splits[i+1])){
-                        subject = splits[i+1]+" "+splits[i+2];
-                        subjectIndex = i+2;
-                        return;
+                        for(int j=i+1; j<splits.length; j++){
+                            String nextWord = splits[j] + " " + splits[j+1];
+                            if("have been".equals(nextWord) || "has been".equals(nextWord) || "had been".equals(nextWord)
+                                    || "would have".equals(nextWord) || "could have".equals(nextWord) || "should have".equals(nextWord)
+                                    || "must have".equals(nextWord) || "can not".equals(nextWord) || "could not".equals(nextWord)
+                                    || "would not".equals(nextWord) || "should not".equals(nextWord) || "has not".equals(nextWord)
+                                    || "had not".equals(nextWord) || "have not".equals(nextWord)){
+                                subjectIndex = j;
+                                break;
+                            }
+                            nextWord = splits[j];
+                            if("was".equals(nextWord)
+                                    || "were".equals(nextWord) || "will".equals(nextWord) || "would".equals(nextWord)
+                                    || "should".equals(nextWord) || "could".equals(nextWord) || "won't".equals(nextWord)
+                                    || "wouldn't".equals(nextWord) || "shouldn't".equals(nextWord) || "couldn't".equals(nextWord)
+                                    || "can't".equals(nextWord) || "never".equals(nextWord)){
+                                subjectIndex = j;
+                                break;
+                            }
+                            subject = subject +" "+ splits[j];
+                        }
                     }else{
                         subject = splits[i+1];
                         subjectIndex = i+1;
@@ -225,12 +243,35 @@ public class Clause {
             }
         }
 
-        if("the".equalsIgnoreCase(splits[0]) || "a".equalsIgnoreCase(splits[0]) || "an".equalsIgnoreCase(splits[0])){
-            subject = splits[0] + " " + splits[1];
-            return;
+        if("the".equalsIgnoreCase(splits[0]) || "a".equalsIgnoreCase(splits[0]) || "an".equalsIgnoreCase(splits[0])
+                || "my".equalsIgnoreCase(splits[0]) || "our".equalsIgnoreCase(splits[0]) || "their".equalsIgnoreCase(splits[0])
+                || "his".equalsIgnoreCase(splits[0]) || "her".equalsIgnoreCase(splits[0]) ){
+            for(int j=0; j<splits.length; j++){
+                String nextWord = splits[j] + (j+1 < splits.length ? (" " + splits[j+1]) : "");
+                if("have been".equals(nextWord) || "has been".equals(nextWord) || "had been".equals(nextWord)
+                        || "would have".equals(nextWord) || "could have".equals(nextWord) || "should have".equals(nextWord)
+                        || "must have".equals(nextWord) || "can not".equals(nextWord) || "could not".equals(nextWord)
+                        || "would not".equals(nextWord) || "should not".equals(nextWord) || "has not".equals(nextWord)
+                        || "had not".equals(nextWord) || "have not".equals(nextWord)){
+                    subjectIndex = j;
+                    break;
+                }
+                nextWord = splits[j];
+                if("was".equals(nextWord)
+                        || "were".equals(nextWord) || "will".equals(nextWord) || "would".equals(nextWord)
+                        || "should".equals(nextWord) || "could".equals(nextWord) || "won't".equals(nextWord)
+                        || "wouldn't".equals(nextWord) || "shouldn't".equals(nextWord) || "couldn't".equals(nextWord)
+                        || "can't".equals(nextWord) || "never".equals(nextWord)){
+                    subjectIndex = j;
+                    break;
+                }
+                subject = subject +" "+ splits[j];
+            }
         }
-        subject = splits[0]; //sentences like "here you are", "there you go" not handled
-        subjectIndex = 0;
+        if(subject.isEmpty()){
+            subject = splits[0]; //sentences like "here you are", "there you go" not handled
+            subjectIndex = 0;
+        }
     }
 
     private void isQuestionSentence() {

@@ -25,7 +25,6 @@ public class SentenceAnalyzer {
         List<String> inputs = Arrays.asList(sentences);
         for(String input : inputs){
             Sentence sentence = new Sentence(input);
-            sentence.analyze();
             System.out.println("######################### "+sentence.toString()+" #########################");
             for(Clause clause : sentence.getClauses()){
                 System.out.println("----------------------" + clause.toString() + "----------------------");

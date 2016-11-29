@@ -14,40 +14,52 @@ public class Sentence {
 
     private List<Clause> clauses = new ArrayList<Clause>();
 
-    private String sentenceType;
+    private boolean isSimpleSentence = true;
 
     private String[] splits;
 
     public Sentence(String sentence) {
         this.sentence = sentence.toLowerCase();
-        splits = sentence.split(" ");
+        splits = this.sentence.split(" ");
+        analyze();
     }
 
     public List<Clause> getClauses() {
         return clauses;
     }
 
-    public String getSentenceType() {
-        return sentenceType;
+    public boolean isSimpleSentence() {
+        return isSimpleSentence;
     }
 
-    public void analyze(){
+    private void analyze(){
         int separator = -1;
+
         for(int i=1; i<splits.length; i++){
             if(isSeparatorWord(splits[i]) && isSubjectWord(splits[i+1])){
-                createClause(separator + 1, i-1);
-                createClause(i+1, splits.length - 1);
+                isSimpleSentence = false;
+                String left = getSentencePart(separator + 1, i - 1);
+                String right = getSentencePart(i+1, splits.length - 1);
+                Sentence leftSentence = new Sentence(left);
+                Sentence rightSentence = new Sentence(right);
+                clauses.addAll(leftSentence.getClauses());
+                clauses.addAll(rightSentence.getClauses());
                 separator = i;
+                break;
             }
+        }
+
+        if(isSimpleSentence){
+            clauses.add(new Clause(sentence));
         }
     }
 
-    private void createClause(int start, int end) {
+    private String getSentencePart(int start, int end) {
         String sentence = "";
         for(int i=start; i<=end; i++){
             sentence += splits[i] + " ";
         }
-        clauses.add(new Clause(sentence));
+        return sentence;
     }
 
     private boolean isSubjectWord(String split) {
