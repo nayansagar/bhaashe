@@ -1,5 +1,6 @@
 package com.innov.bhaashe.data;
 
+import com.innov.bhaashe.DefaultTranslator;
 import com.innov.bhaashe.utils.WordCollections;
 
 import java.util.Arrays;
@@ -18,12 +19,16 @@ public class Clause {
     private String person;
     private String remainingPhrase = "";
     private boolean isQuestion;
+    private String rearrangedText = "";
+    private String translatedText = "";
 
     private int subjectIndex = -1;
     private int verbIndex = -1;
     private int directObjectIndex = -1;
     private int indirectObjectIndex = -1;
     private String[] splits;
+
+    private DefaultTranslator defaultTranslator = DefaultTranslator.getTranslator();
 
     public Clause(String text) {
         this.text = text.toLowerCase();
@@ -39,6 +44,20 @@ public class Clause {
         detectTense();
         detectPerson();
         detectRemainingPhrase();
+        rearrangeText();
+        translate();
+    }
+
+    private void translate() {
+        defaultTranslator.process(this);
+    }
+
+    private void rearrangeText() {
+        rearrangedText = subject;
+        rearrangedText += " " + indirectObject;
+        rearrangedText += " " + directObject;
+        rearrangedText += " " + remainingPhrase;
+        rearrangedText += " " + verb;
     }
 
     private void detectRemainingPhrase() {
@@ -233,6 +252,7 @@ public class Clause {
                                 break;
                             }
                             subject = subject +" "+ splits[j];
+                            subjectIndex = j;
                         }
                     }else{
                         subject = splits[i+1];
@@ -266,6 +286,11 @@ public class Clause {
                     break;
                 }
                 subject = subject +" "+ splits[j];
+                subjectIndex = j;
+            }
+            if(subject.trim().equals(text.trim())){
+                subject = splits[0]+" "+splits[1];
+                subjectIndex = 1;
             }
         }
         if(subject.isEmpty()){
@@ -340,6 +365,18 @@ public class Clause {
 
     public String getRemainingPhrase() {
         return remainingPhrase;
+    }
+
+    public String getRearrangedText() {
+        return rearrangedText;
+    }
+
+    public String getTranslatedText() {
+        return translatedText;
+    }
+
+    public void setTranslatedText(String translatedText) {
+        this.translatedText = translatedText;
     }
 
     @Override

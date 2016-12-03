@@ -1,6 +1,7 @@
 package com.innov.bhaashe;
 
 import com.innov.bhaashe.data.Candidate;
+import com.innov.bhaashe.data.Clause;
 import com.innov.bhaashe.data.Input;
 import com.innov.bhaashe.utils.Dictionary;
 import com.innov.bhaashe.utils.FileUtils;
@@ -137,8 +138,8 @@ public class PhraseTranslator {
             Candidate candidate = phraseTranslator.process(new Input(text));
             if(candidate == null){
                 FileUtils.getInstance().writeLineToFile("phrases.txt", text);
-                Tarjume tarjume = new Tarjume();
-                tarjume.process(new Input(text));
+                DefaultTranslator defaultTranslator = DefaultTranslator.getTranslator();
+                defaultTranslator.process(new Clause(text));
             }else{
                 System.out.println("From PhraseTranslator :: "+ candidate.getTranslation());
             }

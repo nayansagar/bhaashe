@@ -36,6 +36,8 @@ public class SentenceAnalyzer {
                 System.out.println("REMAINING PHRASE : "+ clause.getRemainingPhrase());
                 System.out.println("TENSE : "+ clause.getTense());
                 System.out.println("PERSON : "+ clause.getPerson());
+                System.out.println("REARRANGED : "+ clause.getRearrangedText());
+                System.out.println("TRANSLATED : "+clause.getTranslatedText());
             }
 
         }
