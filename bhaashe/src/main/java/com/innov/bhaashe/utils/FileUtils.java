@@ -49,7 +49,7 @@ public class FileUtils {
         return mappings;
     }
 
-    public void writeLineToFile(String fileName, String text){
+    public void writeKeyToFile(String fileName, String text){
         try {
             FileWriter fw = getFileWriter(fileName);
             fw.append(text + "=\n");

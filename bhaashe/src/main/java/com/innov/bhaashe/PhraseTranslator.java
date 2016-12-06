@@ -17,25 +17,39 @@ public class PhraseTranslator {
 
     Map<String, String> phraseMappings;
     Dictionary dictionary;
+    private static PhraseTranslator instance;
 
-    public PhraseTranslator() throws IOException, URISyntaxException {
+    private PhraseTranslator() throws IOException, URISyntaxException {
         phraseMappings = getFileUtils().getMappingFromFile("phrases.txt", "=");
         dictionary = Dictionary.getInstance();
     }
 
-    public Candidate process(Input input){
-        List<Candidate> candidateList = getClosestPhrase(input.getText());
+    public static PhraseTranslator getInstance(){
+        if(instance == null){
+            try {
+                instance = new PhraseTranslator();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return instance;
+    }
+
+    public Candidate process(Clause clause){
+        List<Candidate> candidateList = getClosestPhrase(clause.toString());
         if(candidateList.isEmpty()){
             return null;
         }
 
         for(Candidate candidate : candidateList){
-            replace(input, candidate);
+            replace(clause, candidate);
             finish(candidate);
         }
 
         for(Candidate candidate : candidateList){
-            if(candidate.getClosestPhrase().equalsIgnoreCase(input.getText())){
+            if(candidate.getClosestPhrase().equalsIgnoreCase(clause.toString())){
                 return candidate;
             }else if(!phraseMappings.get(candidate.getClosestPhrase()).equalsIgnoreCase(candidate.getTranslation())){
                 return candidate;
@@ -49,14 +63,14 @@ public class PhraseTranslator {
 
     }
 
-    private void replace(Input input, Candidate candidate) {
+    private void replace(Clause clause, Candidate candidate) {
         if(candidate.getVaryingIndices() == null || candidate.getVaryingIndices().isEmpty()){
             return;
         }
         for(int index : candidate.getVaryingIndices()){
             String wordToReplace = candidate.getClosestPhrase().split(" ")[index];
             String wordToReplaceInTranslation = getFromDictionary(wordToReplace);
-            String replacementWord = input.getText().split(" ")[index];
+            String replacementWord = clause.toString().split(" ")[index];
             String replacementTranslation = getFromDictionary(replacementWord);
 
             String transformedInput = candidate.getClosestPhrase().replace(wordToReplace, replacementWord);
@@ -135,15 +149,14 @@ public class PhraseTranslator {
         PhraseTranslator phraseTranslator = new PhraseTranslator();
         List<String> inputs = phraseTranslator.getFileUtils().readLinesFromFile("input.txt");
         for(String text : inputs){
-            Candidate candidate = phraseTranslator.process(new Input(text));
+            Candidate candidate = phraseTranslator.process(new Clause(text));
             if(candidate == null){
-                FileUtils.getInstance().writeLineToFile("phrases.txt", text);
+                FileUtils.getInstance().writeKeyToFile("phrases.txt", text);
                 DefaultTranslator defaultTranslator = DefaultTranslator.getTranslator();
                 defaultTranslator.process(new Clause(text));
             }else{
                 System.out.println("From PhraseTranslator :: "+ candidate.getTranslation());
             }
         }
-
     }
 }

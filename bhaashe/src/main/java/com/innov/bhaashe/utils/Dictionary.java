@@ -33,8 +33,16 @@ public class Dictionary {
     }
 
     public void addToDictionary(String word) {
+        for(String s : WordCollections.specialCharacters){
+            if(word.equals(s)){
+                return;
+            }
+        }
+        if(properties.containsKey(word)){
+            return;
+        }
         try {
-            fileUtils.writeLineToFile(DICTIONARY_FILE, word.toLowerCase());
+            fileUtils.writeKeyToFile(DICTIONARY_FILE, word.toLowerCase());
             synchronized (properties){
                 properties = FileUtils.getInstance().getMappingFromFile(DICTIONARY_FILE, "=");
             }

@@ -21,5 +21,7 @@ public class WordCollections {
 
     public static final String[] tenseWords = {"is", "are", "was", "did", "does", "were", "has", "have", "had", "will", "would", "could"};
 
-    public static final String[] sentenceSeparators = {"until", "when", "and", "but"};
+    public static final String[] sentenceSeparators = {"until", "when", "and", "but", ",", ";"};
+
+    public static final String[] specialCharacters = {",", ";", ".", "!", "?"};
 }

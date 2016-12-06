@@ -20,8 +20,17 @@ public class Sentence {
 
     public Sentence(String sentence) {
         this.sentence = sentence.toLowerCase();
+        proocessSpecialCharacters();
         splits = this.sentence.split(" ");
         analyze();
+    }
+
+    private void proocessSpecialCharacters() {
+        for(String ctr : WordCollections.specialCharacters){
+            if(sentence.contains(ctr)){
+                sentence = sentence.replaceAll(ctr, " "+ctr);
+            }
+        }
     }
 
     public List<Clause> getClauses() {
@@ -35,8 +44,8 @@ public class Sentence {
     private void analyze(){
         int separator = -1;
 
-        for(int i=1; i<splits.length; i++){
-            if(isSeparatorWord(splits[i]) && isSubjectWord(splits[i+1])){
+        for(int i=1; i+1<splits.length; i++){
+            if(isSeparatorWord(splits[i]) && (isSubjectWord(splits[i+1]) || isATheIt(splits[i+1]) )){
                 isSimpleSentence = false;
                 String left = getSentencePart(separator + 1, i - 1);
                 String right = getSentencePart(i+1, splits.length - 1);
@@ -52,6 +61,13 @@ public class Sentence {
         if(isSimpleSentence){
             clauses.add(new Clause(sentence));
         }
+    }
+
+    private boolean isATheIt(String split) {
+        if(split.equals("a") || split.equals("the") || split.equals("it")){
+            return true;
+        }
+        return false;
     }
 
     private String getSentencePart(int start, int end) {

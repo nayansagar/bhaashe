@@ -1,6 +1,7 @@
 package com.innov.bhaashe.data;
 
 import com.innov.bhaashe.DefaultTranslator;
+import com.innov.bhaashe.PhraseTranslator;
 import com.innov.bhaashe.utils.WordCollections;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public class Clause {
     private String[] splits;
 
     private DefaultTranslator defaultTranslator = DefaultTranslator.getTranslator();
+    private PhraseTranslator phraseTranslator = PhraseTranslator.getInstance();
 
     public Clause(String text) {
         this.text = text.toLowerCase();
@@ -49,15 +51,52 @@ public class Clause {
     }
 
     private void translate() {
+        /*Candidate candidate = phraseTranslator.process(this);
+        if(candidate != null){
+            translatedText = candidate.getTranslation();
+            return;
+        }*/
+
         defaultTranslator.process(this);
     }
 
     private void rearrangeText() {
         rearrangedText = subject;
-        rearrangedText += " " + indirectObject;
-        rearrangedText += " " + directObject;
-        rearrangedText += " " + remainingPhrase;
+        rearrangedText += " " + sortText(indirectObject);
+        rearrangedText += " " + sortText(directObject);
+        rearrangedText += " " + sortText(remainingPhrase);
+        if(isQuestion){
+            rearrangedText += " " + splits[0];
+        }
         rearrangedText += " " + verb;
+    }
+
+    private String sortText(String remainingText) {
+        String[] remSplits = remainingText.split(" ");
+        String sortedText = "";
+        int limit = remSplits.length - 1;
+        for(int i= limit;i>=0;i--){
+            if(remSplits[i].equals("of") || remSplits[i].equals("on") || remSplits[i].equals("with")
+                    || remSplits[i].equals("to") || remSplits[i].equals("for") || remSplits[i].equals("in")
+                    || remSplits[i].equals("at")){
+                for(int j=i+1; j<=limit; j++){
+                    sortedText += remSplits[j]+" ";
+                }
+                sortedText += remSplits[i]+" ";
+                limit = i-1;
+            }
+        }
+
+        if(limit >= 0){
+            if(sortedText.isEmpty()){
+                return remainingText;
+            }
+
+            for(int i=limit; i>=0; i--){
+                sortedText += remSplits[i]+" ";
+            }
+        }
+        return sortedText;
     }
 
     private void detectRemainingPhrase() {
@@ -232,7 +271,7 @@ public class Clause {
                 if(Arrays.asList(WordCollections.tenseWords).contains(splits[i])){
                     if( (splits.length > i + 2) && ( "a".equals(splits[i+1]) || "an".equals(splits[i+1])) ||
                             "the".equals(splits[i+1])){
-                        for(int j=i+1; j<splits.length; j++){
+                        for(int j=i+1; j+1<splits.length; j++){
                             String nextWord = splits[j] + " " + splits[j+1];
                             if("have been".equals(nextWord) || "has been".equals(nextWord) || "had been".equals(nextWord)
                                     || "would have".equals(nextWord) || "could have".equals(nextWord) || "should have".equals(nextWord)
